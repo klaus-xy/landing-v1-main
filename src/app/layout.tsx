@@ -8,11 +8,10 @@ import { GoogleTagManager } from "@next/third-parties/google";
 import Script from "next/script";
 import NextTopLoader from "nextjs-toploader";
 import { usePathname } from "next/navigation";
-import ZohoDesk from '@/components/ui/zoho';
-import { Providers } from './providers';
+import ZohoDesk from "@/components/ui/zoho";
+import { Providers } from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
-
 
 export default function RootLayout({
   children,
@@ -30,12 +29,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <Script
-          defer
-          strategy="afterInteractive"
-          type="application/ld+json"
-          src="/script/schema.json"
-        />
+        {typeof window !== "undefined" && (
+          <Script
+            defer
+            strategy="afterInteractive"
+            type="application/ld+json"
+            src="/script/schema.json"
+          />
+        )}
       </head>
       <body className={inter.className}>
         <Providers>
@@ -45,7 +46,9 @@ export default function RootLayout({
             {children}
           </div>
         </Providers>
-        <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTAG_ID as string} />
+        {typeof window !== "undefined" && (
+          <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTAG_ID as string} />
+        )}
       </body>
     </html>
   );

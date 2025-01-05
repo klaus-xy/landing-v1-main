@@ -13,13 +13,26 @@ gsap.registerPlugin(TextPlugin);
 gsap.registerPlugin(ScrollTrigger);
 
 export function Providers({ children }: { children: React.ReactNode }) {
-    useEffect(() => {
-        new MouseFollower({
-            className: "mf-cursor p-cursor",
-        });
-        NextSnapPixel.init(process.env.NEXT_PUBLIC_SNAP_PIXEL_ID);
-        NextSnapPixel.track("PAGE_VIEW");
-    }, []);
+  useEffect(() => {
+    new MouseFollower({
+      className: "mf-cursor p-cursor",
+    });
+    // Error coming from here...
+    // Probably because of invalid Snap Pixel ID
 
-    return <RatesProvider>{children}</RatesProvider>;
+    // Fix: Catch the error and log it to the console
+    const snapPixelId = process.env.NEXT_PUBLIC_SNAP_PIXEL_ID;
+    if (typeof window !== "undefined" && snapPixelId) {
+      try {
+        NextSnapPixel.init(snapPixelId);
+
+        // Track if init is successful
+        NextSnapPixel.track("PAGE_VIEW");
+      } catch (error) {
+        console.error("SNAP PIXEL INITIALIZATION FAILED. REASON: " + error);
+      }
+    }
+  }, []);
+
+  return <RatesProvider>{children}</RatesProvider>;
 }
