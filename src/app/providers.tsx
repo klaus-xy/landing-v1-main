@@ -10,26 +10,29 @@ import { RatesProvider } from "@/context/conversion-rates";
 
 MouseFollower.registerGSAP(gsap);
 gsap.registerPlugin(TextPlugin);
-gsap.registerPlugin(ScrollTrigger);
+// gsap.registerPlugin(ScrollTrigger); // Probable cause of the hydration error.
 
 export function Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    new MouseFollower({
-      className: "mf-cursor p-cursor",
-    });
-    // Error coming from here...
-    // Probably because of invalid Snap Pixel ID
+    // FIX:
+    // Register scroll trigger only after the DOM is available. This will trigger warnings in components that use ScrollTrigger on their first render. Components should ensure scroll trigger is registered before usage.
+    if (typeof window !== "undefined") {
+      gsap.registerPlugin(ScrollTrigger);
 
-    // Fix: Catch the error and log it to the console
-    const snapPixelId = process.env.NEXT_PUBLIC_SNAP_PIXEL_ID;
-    if (typeof window !== "undefined" && snapPixelId) {
-      try {
-        NextSnapPixel.init(snapPixelId);
+      // Initialize mouse follower
+      new MouseFollower({
+        className: "mf-cursor p-cursor",
+      });
 
-        // Track if init is successful
-        NextSnapPixel.track("PAGE_VIEW");
-      } catch (error) {
-        console.error("SNAP PIXEL INITIALIZATION FAILED. REASON: " + error);
+      // Initialize Snap pxel
+      const snapPixelId = process.env.NEXT_PUBLIC_SNAP_PIXEL_ID;
+      if (snapPixelId) {
+        try {
+          NextSnapPixel.init(snapPixelId);
+          NextSnapPixel.track("PAGE_VIEW");
+        } catch (error) {
+          console.error("Snap Pixel initialization failed:", error);
+        }
       }
     }
   }, []);
