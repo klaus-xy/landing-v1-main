@@ -30,11 +30,12 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {typeof window !== "undefined" && (
-          <Script
-            defer
-            strategy="afterInteractive"
-            type="application/ld+json"
-            src="/script/schema.json"
+          <link
+            rel="fetch"
+            href="/script/schema.json"
+            as="fetch"
+            type="application/json"
+            crossOrigin="anonymous"
           />
         )}
       </head>
