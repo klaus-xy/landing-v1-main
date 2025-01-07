@@ -24,7 +24,8 @@ const HomeHeroSection = () => {
       ["#hero-section .p-rotate-in", "#hero-section .p-rotate-in-inverse"],
       animate("rotate-in", { delay: 0.3 })
     );
-
+    const ScrollTrigger = require("gsap/ScrollTrigger");
+    gsap.registerPlugin(ScrollTrigger);
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: "#hero-section",
